@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project default="dist" basedir=".">
+       <!--系统环境变量-->
+       <property environment="env"/>
+       <property name="java.home" value="${env.JAVA_HOME}"/>
+       <property name="ant.home" value="env.ANT_HOME"/>
+       <!--工程环境变量-->
+       <property name="app.name" value="hello-ant"/>
+       <property name="app.jar" value="${app.name}.jar"/>
+       <property name="app.copyright" value=" Copyright(c) 2016 TianXing's Studio All rights reserved. "/>
+       <!--工程src属性-->
+       <property name="src.dir" value="src"/>
+       <property name="src.main" value="${src.dir}/main"/>
+       <property name="src.script" value="${src.dir}/script"/>
+       <!--工程lib包-->
+       <property name="lib.dir" value="lib"/>
+       <!--工程build目录-->
+       <property name="build.dir" value="build"/>
+       <property name="build.classes" value="${build.dir}/classes"/>
+       <property name="build.docs" value="${build.dir}/docs"/>
+       <property name="build.docs.api" value="${build.docs}/api"/>
+       <property name="build.lib" value="${build.dir}/lib"/>
+       <!--工程dist发布目录-->
+       <property name="dist.dir" value="dist"/>
+       <property name="dist.bin" value="${dist.dir}/bin"/>
+       <property name="dist.docs" value="${dist.dir}/docs"/>
+       <property name="dist.lib" value="${dist.dir}/lib"/>
+       <!--工程docs文档目录-->
+       <property name="docs.dir" value="docs"/>
+       <property name="report" value="report"/>
+
+       <path id="classpath">
+              <pathelement location="${build.classes}"/>
+              <pathelement path="${java.home}/lib/tools.jar"/>
+       </path>
+
+       <!--初始化-->
+       <target name="init">
+              <!--清除以前目录-->
+              <delete dir="${build.dir}" failonerror="false"/>
+              <delete dir="${dist.dir}" failonerror="false"/>
+              <!--准备目录-->
+              <mkdir dir="${src.script}"/>
+              <mkdir dir="${lib.dir}"/>
+              <mkdir dir="${build.dir}"/>
+              <mkdir dir="${build.classes}"/>
+              <mkdir dir="${build.docs}"/>
+              <mkdir dir="${build.docs.api}"/>
+              <mkdir dir="${build.lib}"/>
+
+              <mkdir dir="${dist.dir}"/>
+              <mkdir dir="${dist.bin}"/>
+              <mkdir dir="${dist.docs}"/>
+              <mkdir dir="${dist.lib}"/>
+
+              <mkdir dir="${docs.dir}"/>
+              <mkdir dir="${report}"/>
+       </target>
+
+       <!--编译构建-->
+       <target name="build" depends="init">
+              <javac srcdir="${src.dir}" destdir="${build.classes}">
+                     <classpath refid="classpath"/>
+              </javac>
+       </target>
+
+       <!--打包jar-->
+       <target name="jars" depends="build">
+              <jar basedir="${build.classes}" jarfile="${build.lib}/${app.jar}"/>
+       </target>
+
+       <!--生成javadoc-->
+       <target name="javadocs" depends="jars" description="-> creates the API documentation">
+              <javadoc packagenames="main.hello.ant.*" sourcepath="${src.dir}" defaultexcludes="yes" destdir="${docs.dir}" author="true" version="true" use="true" windowtitle="Docs API">
+                     <doctitle>
+                            <![CDATA[<h1>Hello and Docs API</h1>]]>
+                     </doctitle>
+                     <bottom>
+                            <![CDATA[<i>${app.copyright}</i>]]>
+                     </bottom>
+                     <tag name="todo" scope="all" description="To do:"/>
+              </javadoc>
+              <copy todir="${build.docs.api}">
+                     <fileset dir="${docs.dir}"/>
+              </copy>
+       </target>
+
+       <!--生成dist发布文件-->
+       <target name="dist" depends="javadocs">
+              <copy todir="${dist.bin}">
+                     <fileset dir="${src.script}/"/>
+              </copy>
+              <copy todir="${dist.docs}">
+                     <fileset dir="${build.docs}"/>
+              </copy>
+              <copy todir="${dist.lib}">
+                     <fileset dir="${build.lib}"/>
+              </copy>
+       </target>
+
+       <!--生成junit报告-->
+       <target name="junitreport" depends="build">
+              <junit printsummary="true" failureproperty="tests.failed">
+                     <test name="main.hello.ant.HelloAnt"/>
+                     <classpath>
+                            <pathelement location="${bulid.classes}"/>
+                     </classpath>
+              </junit>
+              <junitreport todir="${report}">
+                     <fileset dir="${report}">
+                            <include name="TEST-*.xml"/>
+                     </fileset>
+                     <report format="frames" todir="${report}"/>
+              </junitreport>
+              <fail if="tests.failed">
+
+              </fail>
+       </target>
+</project>
