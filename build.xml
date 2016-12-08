@@ -66,7 +66,13 @@
 
        <!--打包jar-->
        <target name="jars" depends="build">
-              <jar basedir="${build.classes}" jarfile="${build.lib}/${app.jar}"/>
+              <jar basedir="${build.classes}" jarfile="${build.lib}/${app.jar}">
+                     <!-- 向jar包中的main文件中添加内容 -->
+                     <!--<manifest>-->
+                            <!--<attribute name="Built-By" value="${user.name}"/>-->
+                            <!--<attribute name="Main-class" value="package.Main"/>-->
+                     <!--</manifest>-->
+              </jar>
        </target>
 
        <!--生成javadoc-->
@@ -88,6 +94,7 @@
        <!--生成dist发布文件-->
        <target name="dist" depends="javadocs">
               <copy todir="${dist.bin}">
+                     <!--fileset 是对文件的分组-->
                      <fileset dir="${src.script}/"/>
               </copy>
               <copy todir="${dist.docs}">
